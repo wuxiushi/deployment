@@ -16,12 +16,8 @@ services:
     networks:
       mysqlserver_redisserver_network:
         ipv4_address: 192.168.12.11
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
 
   mysqlserver_app:
-    #privileged: true
     image: mysql:5.7.24
     environment:
       - MYSQL_ROOT_PASSWORD=mypassword 
@@ -34,10 +30,7 @@ services:
       mysqlserver_redisserver_network:
         ipv4_address: 192.168.12.12
     volumes:
-      - /tmp/mysql:/var/lib/mysql
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
+      - /data1/export/app/mysqlserver:/var/lib/mysql
 
   phpredisadmin_app:
     image: erikdubbelboer/phpredisadmin:latest
@@ -52,27 +45,19 @@ services:
     networks:
       mysqlserver_redisserver_network:
         ipv4_address: 192.168.12.13
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
 
   redisserver_app:
-    #privileged: true
     image: redis:5.0
     container_name: redisserver_app
     hostname: redisserver
     restart: always
-    #ports:
-    #  - "6379:6379"
+    ports:
+      - "6379:6379"
     networks:
       mysqlserver_redisserver_network:
         ipv4_address: 192.168.12.14
     volumes:
-      - /tmp/redis:/data
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
-
+      - /data1/export/app/redisserver:/data
 
 networks:
   mysqlserver_redisserver_network:
