@@ -1,83 +1,40 @@
 version: "3.7"
 services:
-  phpmyadmin_app:
-    image: phpmyadmin/phpmyadmin:latest
-    environment:
-      - PMA_HOST=192.168.12.12
-      - PMA_PORT=3306
-      - PMA_VERBOSE=mysqlserver
-      - PMA_USER=root
-      - PMA_PASSWORD=mypassword
-    container_name: phpmyadmin_app
-    hostname: phpmyadmin
+  registry_app:
+    image: registry:2
+    container_name: registry_app
+    hostname: registry_app
     restart: always
     ports:
-      - "8080:80"
+      - "5000:5000"
     networks:
-      mysqlserver_redisserver_network:
-        ipv4_address: 192.168.12.11
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
-
-  mysqlserver_app:
-    #privileged: true
-    image: mysql:5.7.24
-    environment:
-      - MYSQL_ROOT_PASSWORD=mypassword 
-    container_name: mysqlserver_app
-    hostname: mysqlserver
-    restart: always
-    ports:
-      - "3306:3306"
-    networks:
-      mysqlserver_redisserver_network:
-        ipv4_address: 192.168.12.12
+      registry_network:
+        ipv4_address: 192.168.21.11
     volumes:
-      - /tmp/mysql:/var/lib/mysql
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
+      - /export/app/registry/registry:/var/lib/registry
+      - ./conf/registry/registry-srv.yml:/etc/docker/registry/config.yml:ro
+      - ./conf/registry/auth.cert:/etc/docker/registry/auth.cert:ro
 
-  phpredisadmin_app:
-    image: erikdubbelboer/phpredisadmin:latest
-    environment:
-      - REDIS_1_HOST=192.168.12.14
-      - REDIS_1_NAME=redisserver
-    container_name: phpredisadmin_app
-    hostname: phpredisadmin
+  registry_web:
+    image: hyper/docker-registry-web
+    container_name: registry_web
+    hostname: registry_web
     restart: always
     ports:
-      - "8081:80"
+      - "8080:8080"
     networks:
-      mysqlserver_redisserver_network:
-        ipv4_address: 192.168.12.13
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
-
-  redisserver_app:
-    #privileged: true
-    image: redis:5.0
-    container_name: redisserver_app
-    hostname: redisserver
-    restart: always
-    #ports:
-    #  - "6379:6379"
-    networks:
-      mysqlserver_redisserver_network:
-        ipv4_address: 192.168.12.14
+      registry_network:
+        ipv4_address: 192.168.21.12
     volumes:
-      - /tmp/redis:/data
-    #dns:
-    #  - 172.16.0.1
-    #  - 172.16.0.2
-
+      - /export/app/registry/registry_web:/data
+      - ./conf/registry-web/registry-web.yml:/conf/config.yml:ro
+      - ./conf/registry-web/auth.key:/conf/auth.key:ro
 
 networks:
-  mysqlserver_redisserver_network:
-    name: mysqlserver_redisserver_network
+  registry_network:
+    name: registry_network
     driver: bridge
     ipam:
       config:
-        - subnet: 192.168.12.0/24
+        - subnet: 192.168.21.0/24
+

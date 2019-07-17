@@ -1,0 +1,8 @@
+registry:
+   url: http://192.168.21.11:5000/v2
+   name: 192.168.21.11:5000
+   readonly: false
+   auth:
+     enabled: true
+     key: /conf/auth.key
+     issuer: wuxiushi
