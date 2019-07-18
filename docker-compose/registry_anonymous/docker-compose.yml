@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  registry_app:
+    image: registry:2
+    container_name: registry_app
+    hostname: registry_app
+    restart: always
+    ports:
+      - "5000:5000"
+    networks:
+      registry_network:
+        ipv4_address: 192.168.21.11
+    volumes:
+      - /export/app/registry/registry:/var/lib/registry
+      - ./conf/registry/registry-srv.yml:/etc/docker/registry/config.yml:ro
+
+  registry_web:
+    image: hyper/docker-registry-web
+    container_name: registry_web
+    hostname: registry_web
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      registry_network:
+        ipv4_address: 192.168.21.12
+    volumes:
+      - ./conf/registry-web/registry-web.yml:/conf/config.yml:ro
+
+networks:
+  registry_network:
+    name: registry_network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.21.0/24
+

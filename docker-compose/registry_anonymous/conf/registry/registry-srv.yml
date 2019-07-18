@@ -1,0 +1,23 @@
+version: 0.1
+
+storage:
+  cache:
+    layerinfo: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:
+    enabled: true
+    
+http:
+  addr: 0.0.0.0:5000    
+
+log:
+  level: info
+  
+notifications:
+  endpoints:
+    - name: listener
+      url: http://192.168.21.12:8080/api/notification
+      timeout: 500ms
+      threshold: 5
+      backoff: 1s
