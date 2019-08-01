@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  redmine_app:
+    image: redmine:4.0 
+    container_name: redmine_app
+    restart: always
+    networks:
+      redmine_network:
+        ipv4_address: 192.168.14.11
+    hostname: redmine
+    volumes:
+      - ./config/configuration.yml:/usr/src/redmine/config/configuration.yml
+      - ./fonts/truetype/arphic/:/usr/share/fonts/truetype/arphic/
+      #- /export/app/redmine/files:/usr/src/redmine/files
+      #- /export/app/redmine/sqlite:/usr/src/redmine/sqlite
+
+networks:
+  redmine_network:
+    name: redmine_network
+    driver: bridge 
+    ipam:
+      config:
+        - subnet: 192.168.14.0/24
